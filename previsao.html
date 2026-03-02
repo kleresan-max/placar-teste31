@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Motor de Previsão</title>
+</head>
+<body>
+
+<h2>Calculadora de Probabilidade - Modelo Poisson</h2>
+
+<label>Média gols Time Casa:</label><br>
+<input type="number" id="golsCasa" step="0.01"><br><br>
+
+<label>Média gols Time Fora:</label><br>
+<input type="number" id="golsFora" step="0.01"><br><br>
+
+<button onclick="calcular()">Calcular Probabilidades</button>
+
+<h3>Resultado:</h3>
+<div id="resultado"></div>
+
+<script>
+
+function fatorial(n) {
+  if (n === 0) return 1;
+  return n * fatorial(n - 1);
+}
+
+function poisson(k, lambda) {
+  return (Math.exp(-lambda) * Math.pow(lambda, k)) / fatorial(k);
+}
+
+function calcular() {
+
+  const lambdaCasa = parseFloat(document.getElementById("golsCasa").value);
+  const lambdaFora = parseFloat(document.getElementById("golsFora").value);
+
+  let probCasa = 0;
+  let probEmpate = 0;
+  let probFora = 0;
+  let probOver25 = 0;
+  let probBTTS = 0;
+
+  for (let i = 0; i <= 5; i++) {
+    for (let j = 0; j <= 5; j++) {
+
+      const pCasa = poisson(i, lambdaCasa);
+      const pFora = poisson(j, lambdaFora);
+
+      const prob = pCasa * pFora;
+
+      if (i > j) probCasa += prob;
+      if (i === j) probEmpate += prob;
+      if (j > i) probFora += prob;
+
+      if (i + j > 2) probOver25 += prob;
+      if (i > 0 && j > 0) probBTTS += prob;
+
+    }
+  }
+
+  document.getElementById("resultado").innerHTML = `
+    Vitória Casa: ${(probCasa * 100).toFixed(2)}% <br>
+    Empate: ${(probEmpate * 100).toFixed(2)}% <br>
+    Vitória Fora: ${(probFora * 100).toFixed(2)}% <br><br>
+    Over 2.5: ${(probOver25 * 100).toFixed(2)}% <br>
+    Ambos Marcam: ${(probBTTS * 100).toFixed(2)}%
+  `;
+}
+
+</script>
+
+</body>
+</html>
