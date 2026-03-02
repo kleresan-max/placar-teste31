@@ -14,6 +14,9 @@
 <label>Média gols Time Fora:</label><br>
 <input type="number" id="golsFora" step="0.01"><br><br>
 
+<label>Odd Vitória Casa:</label><br>
+<input type="number" id="oddCasa" step="0.01"><br><br>
+
 <button onclick="calcular()">Calcular Probabilidades</button>
 
 <h3>Resultado:</h3>
@@ -34,6 +37,12 @@ function calcular() {
 
   const lambdaCasa = parseFloat(document.getElementById("golsCasa").value);
   const lambdaFora = parseFloat(document.getElementById("golsFora").value);
+  const oddCasa = parseFloat(document.getElementById("oddCasa").value);
+
+  if (isNaN(lambdaCasa) || isNaN(lambdaFora) || isNaN(oddCasa)) {
+    document.getElementById("resultado").innerHTML = "Preencha todos os campos.";
+    return;
+  }
 
   let probCasa = 0;
   let probEmpate = 0;
@@ -59,12 +68,16 @@ function calcular() {
     }
   }
 
+  const evCasa = (probCasa * oddCasa) - 1;
+
   document.getElementById("resultado").innerHTML = `
+    <strong>Probabilidades:</strong><br><br>
     Vitória Casa: ${(probCasa * 100).toFixed(2)}% <br>
     Empate: ${(probEmpate * 100).toFixed(2)}% <br>
     Vitória Fora: ${(probFora * 100).toFixed(2)}% <br><br>
     Over 2.5: ${(probOver25 * 100).toFixed(2)}% <br>
-    Ambos Marcam: ${(probBTTS * 100).toFixed(2)}%
+    Ambos Marcam: ${(probBTTS * 100).toFixed(2)}% <br><br>
+    <strong>Valor Esperado (Casa): ${(evCasa * 100).toFixed(2)}%</strong>
   `;
 }
 
